@@ -3,9 +3,7 @@
 #   the COPYRIGHT file.
 
 Diaspora::Application.routes.draw do
-
   # Posting and Reading
-
   resources :reshares
 
   resources :status_messages, :only => [:new, :create]
@@ -119,6 +117,8 @@ Diaspora::Application.routes.draw do
   resources :blocks, :only => [:create, :destroy]
 
   get 'community_spotlight' => "contacts#spotlight", :as => 'community_spotlight'
+
+  get 'i/:id' => 'invitation_codes#update', :as => 'invite_code'
 
   resources :people, :except => [:edit, :update] do
     resources :status_messages
