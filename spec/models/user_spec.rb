@@ -35,6 +35,63 @@ describe User do
       end
     end
 
+    describe 'hidden_shareables' do
+      before do
+        @sm = Factory(:status_message)
+        @sm_id = @sm.id.to_s
+        @sm_class = @sm.class.base_class.to_s
+      end
+
+      it 'is a hash' do
+        alice.hidden_shareables.should == {}
+      end
+
+      describe '#add_hidden_shareable' do
+        it 'adds the share id to an array which is keyed by the objects class' do
+          alice.add_hidden_shareable(@sm_class, @sm_id)
+          alice.hidden_shareables['Post'].should == [@sm_id]
+        end
+
+        it 'handles having multiple posts' do
+          sm2 = Factory(:status_message)
+          alice.add_hidden_shareable(@sm_class, @sm_id)
+          alice.add_hidden_shareable(sm2.class.base_class.to_s, sm2.id.to_s)
+
+          alice.hidden_shareables['Post'].should =~ [@sm_id, sm2.id.to_s]
+        end
+
+        it 'handles having multiple shareable types' do
+          photo = Factory(:photo)
+          alice.add_hidden_shareable(photo.class.base_class.to_s, photo.id.to_s)
+          alice.add_hidden_shareable(@sm_class, @sm_id)
+
+          alice.hidden_shareables['Photo'].should == [photo.id.to_s]
+        end
+      end
+
+      describe '#remove_hidden_shareable' do
+        it 'removes the id from the hash if it is there'  do
+          alice.add_hidden_shareable(@sm_class, @sm_id)
+          alice.remove_hidden_shareable(@sm_class, @sm_id)
+          alice.hidden_shareables['Post'].should == []
+        end
+      end
+
+      describe 'toggle_hidden_shareable' do
+        it 'calls add_hidden_shareable if the key does not exist, and returns true' do
+          alice.should_receive(:add_hidden_shareable).with(@sm_class, @sm_id)
+          alice.toggle_hidden_shareable(@sm).should be_true
+        end
+
+        it 'calls remove_hidden_shareable if the key exists' do
+          alice.should_receive(:remove_hidden_shareable).with(@sm_class, @sm_id)
+          alice.add_hidden_shareable(@sm_class, @sm_id)
+          alice.toggle_hidden_shareable(@sm).should be_false
+        end
+      end
+    end
+
+
     describe '#infer_email_from_invitation_provider' do
       it 'sets corresponding email if invitation_service is email' do
         addr = '12345@alice.com'
@@ -1000,7 +1057,7 @@ describe User do
       user.should_not_receive(:generate_reset_password_token)
       user.send_reset_password_instructions
     end
-    
+
     it "queues up a job to send the reset password instructions" do
       user = Factory :user
       Resque.should_receive(:enqueue).with(Jobs::ResetPassword, user.id)
@@ -1065,6 +1122,7 @@ describe User do
           current_sign_in_at
           last_sign_in_at
           current_sign_in_ip
+          hidden_shareables
           last_sign_in_ip
           invitation_service
           invitation_identifier

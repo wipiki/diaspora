@@ -30,6 +30,8 @@ class User < ActiveRecord::Base
   validates_associated :person
   validate :no_person_with_same_username
 
+  serialize :hidden_shareables, Hash
+
   has_one :person, :foreign_key => :owner_id
   delegate :public_key, :posts, :photos, :owns?, :diaspora_handle, :name, :public_url, :profile, :first_name, :last_name, :to => :person
 
@@ -81,8 +83,8 @@ class User < ActiveRecord::Base
     else
       existing_user = User.joins(:services).where(:services => {:type => "Services::#{service.titleize}", :uid => identifier}).first
     end
-   
-   if existing_user.nil? 
+
+   if existing_user.nil?
     i = Invitation.where(:service => service, :identifier => identifier).first
     existing_user = i.recipient if i
    end
@@ -98,6 +100,42 @@ class User < ActiveRecord::Base
      self.create_from_invitation!(invitation)
     end
   end
+
+  def add_hidden_shareable(key, share_id, opts={})
+    if self.hidden_shareables.has_key?(key)
+      self.hidden_shareables[key] << share_id
+    else
+      self.hidden_shareables[key] = [share_id]
+    end
+    self.save unless opts[:batch]
+    self.hidden_shareables
+  end
+
+  def remove_hidden_shareable(key, share_id)
+    if self.hidden_shareables.has_key?(key)
+      self.hidden_shareables[key].delete(share_id)
+    end
+  end
+
+  def toggle_hidden_shareable(share)
+    share_id = share.id.to_s
+    key = share.class.base_class.to_s
+    if self.hidden_shareables.has_key?(key) && self.hidden_shareables[key].include?(share_id)
+      self.remove_hidden_shareable(key, share_id)
+      self.save
+      false
+    else
+      self.add_hidden_shareable(key, share_id)
+      self.save
+      true
+    end
+  end
+
+  def has_hidden_shareables_of_type?(t = Post)
+    share_type = t.base_class.to_s
+    self.hidden_shareables[share_type].present?
+  end
+
 
   def self.create_from_invitation!(invitation)
     user = User.new
