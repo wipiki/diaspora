@@ -4,6 +4,10 @@ When /^(.*) in the header$/ do |action|
   end
 end
 
+And /^I submit the form$/ do
+  click_button :submit
+end
+
 And /^I expand the publisher$/ do
   page.execute_script('
     $("#publisher").removeClass("closed");

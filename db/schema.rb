@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120114191018) do
+ActiveRecord::Schema.define(:version => 20120127235102) do
 
   create_table "account_deletions", :force => true do |t|
     t.string  "diaspora_handle"
@@ -335,12 +335,13 @@ ActiveRecord::Schema.define(:version => 20120114191018) do
     t.date     "birthday"
     t.string   "gender"
     t.text     "bio"
-    t.boolean  "searchable",                      :default => true, :null => false
-    t.integer  "person_id",                                         :null => false
+    t.boolean  "searchable",                      :default => true,  :null => false
+    t.integer  "person_id",                                          :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "location"
     t.string   "full_name",        :limit => 70
+    t.boolean  "nsfw",                            :default => false
   end
 
   add_index "profiles", ["full_name", "searchable"], :name => "index_profiles_on_full_name_and_searchable"
