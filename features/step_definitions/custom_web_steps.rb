@@ -9,10 +9,7 @@ And /^I submit the form$/ do
 end
 
 And /^I expand the publisher$/ do
-  page.execute_script('
-    $("#publisher").removeClass("closed");
-    $("#publisher").find("textarea").focus();
-    ')
+ click_publisher
 end
 
 When 'I click the aspects title' do
