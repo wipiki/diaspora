@@ -907,6 +907,10 @@ en:
       title: "Like Stream"
       contacts_title: "People whose posts you like"
 
+    participation_stream:
+      title: "Participation Stream"
+      contacts_title: "People whose posts you participate in"
+
     followed_tag:
       title: "#Followed Tags"
       contacts_title: "People who dig these tags"

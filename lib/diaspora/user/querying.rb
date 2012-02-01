@@ -23,6 +23,7 @@ module Diaspora
       opts
     end
 
+
     class MultiStream
       def initialize(user, order, max_time, include_spotlight)
         @user = user
@@ -69,7 +70,34 @@ module Diaspora
       def ids(query)
         Post.connection.select_values(query.for_a_stream(@max_time, @order).select('posts.id').to_sql)
       end
+
     end
+
+    class ParticipationStream < MultiStream
+      def initialize(user, order, max_time)
+        @user = user
+        @order = order
+        @max_time = max_time
+        puts "yeh ayeah yeah"
+      end
+
+      def make_relation!
+        post_ids = like_ids + comment_ids
+        puts post_ids.inspect
+        Post.where(:id => post_ids)
+      end
+
+      def like_ids
+        puts StatusMessage.commented_by(self.user.person).inspect
+        ids(StatusMessage.commented_by(self.user.person)).map(&:id)
+      end
+
+      def commented_ids
+        puts StatusMessage.liked_by(self.user.person).inspect
+        ids(StatusMessage.liked_by(self.user.person)).map(&:id)
+      end
+    end
+
 
     class Base
       def initialize(user, klass)

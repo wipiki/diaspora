@@ -8,6 +8,7 @@ require File.join(Rails.root, "lib", "stream", "comments")
 require File.join(Rails.root, "lib", "stream", "likes")
 require File.join(Rails.root, "lib", "stream", "mention")
 require File.join(Rails.root, "lib", "stream", "followed_tag")
+require File.join(Rails.root, "lib", "stream", "participation")
 
 class StreamsController < ApplicationController
   before_filter :authenticate_user!
@@ -47,6 +48,11 @@ class StreamsController < ApplicationController
 
   def followed_tags
     stream_responder(Stream::FollowedTag)
+  end
+
+  def participation
+    puts "yea"
+    stream_responder(Stream::Participation)
   end
 
   private
