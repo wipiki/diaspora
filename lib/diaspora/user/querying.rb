@@ -78,23 +78,19 @@ module Diaspora
         @user = user
         @order = order
         @max_time = max_time
-        puts "yeh ayeah yeah"
       end
 
       def make_relation!
-        post_ids = like_ids + comment_ids
-        puts post_ids.inspect
+        post_ids = like_ids + commented_ids
         Post.where(:id => post_ids)
       end
 
       def like_ids
-        puts StatusMessage.commented_by(self.user.person).inspect
-        ids(StatusMessage.commented_by(self.user.person)).map(&:id)
+        ids(StatusMessage.commented_by(@user.person).order)
       end
 
       def commented_ids
-        puts StatusMessage.liked_by(self.user.person).inspect
-        ids(StatusMessage.liked_by(self.user.person)).map(&:id)
+        ids(StatusMessage.liked_by(@user.person))
       end
     end
 
