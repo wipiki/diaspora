@@ -5,7 +5,7 @@
 class InvitationsController < ApplicationController
 
   def new
-    @invite_code = current_user.invitation_code InvitationCode.find_or_create_by_user_id(current_user.id)
+    @invite_code = current_user.invitation_code
     @sent_invitations = current_user.invitations_from_me.includes(:recipient)
     respond_to do |format|
       format.html do
@@ -14,6 +14,11 @@ class InvitationsController < ApplicationController
     end
   end
 
+  def edit
+    user = User.find_by_invitation_token(params[:invitation_token])
+    invitation_code = user.ugly_accept_invitation_code
+    redirect_to invite_code_path(invitation_code)
+  end
 
   def check_if_invites_open
     unless AppConfig[:open_invitations]
@@ -21,5 +26,14 @@ class InvitationsController < ApplicationController
       redirect_to :back
       return
     end
+  end
+
+  def create
+    emails = params[:email].to_s.gsub(/\s/, '').split(/, */)
+    language = params[:language]
+    invites = Invitation.batch_invite(emails, :message => message, :sender => current_user, :aspect => aspect, :service => 'email', :language => language)
+    flash[:notice] = 
+    puts params.inspect
+    redirect_to root_path
   end
 end

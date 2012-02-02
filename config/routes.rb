@@ -91,11 +91,14 @@ Diaspora::Application.routes.draw do
 
   devise_for :users, :controllers => {:registrations => "registrations",
                                       :password      => "devise/passwords",
-                                      :sessions      => "sessions",
-                                      :invitations   => "invitations"} do
-    get 'invitations/resend/:id' => 'invitations#resend', :as => 'invitation_resend'
-    get 'invitations/email' => 'invitations#email', :as => 'invite_email'
-  end
+                                      :sessions      => "sessions"}
+
+  #legacy routes to support old invite routes
+  get 'users/invitations/accept' => 'invitations#edit'
+  get 'users/invitations/resend/:id' => 'invitations#resend', :as => 'invitation_resend'
+  get 'users/invitations/email' => 'invitations#email', :as => 'invite_email'
+  get 'users/invitations/new' => 'invitations#new', :as => 'new_user_invitation'
+  post 'users/invitations' => 'invitations#create', :as => 'new_user_invitation'
 
   get 'login' => redirect('/users/sign_in')
 
@@ -115,10 +118,6 @@ Diaspora::Application.routes.draw do
   resources :aspect_memberships, :only  => [:destroy, :create]
   resources :share_visibilities,  :only => [:update]
   resources :blocks, :only => [:create, :destroy]
-
-  get 'community_spotlight' => "contacts#spotlight", :as => 'community_spotlight'
-
-  get 'stream' => "multis#index", :as => 'multi'
 
   get 'i/:id' => 'invitation_codes#show', :as => 'invite_code'
 
