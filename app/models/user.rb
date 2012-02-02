@@ -108,6 +108,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def invitation_code
+    InvitationCode.find_or_create_by_user_id(self.id)
+  end
+
   def hidden_shareables
     self[:hidden_shareables] ||= {}
   end
