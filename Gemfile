@@ -158,3 +158,5 @@ group :development do
   # for tracing AR object instantiation and memory usage per request
   gem 'oink'
 end
+
+gem "recaptcha", :require => "recaptcha/rails"

@@ -7,7 +7,7 @@
     });
 
     this.animateMessages = function() {
-      var flashMessages = $("#flash_notice, #flash_error, #flash_alert");
+      var flashMessages = $("#flash_notice, #flash_error, #flash_alert, #flash_recaptcha_error");
       flashMessages.animate({
         top: 0
       }, 400).delay(4000).animate({

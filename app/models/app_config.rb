@@ -166,4 +166,8 @@ HELP
   def self.single_process_mode?
     (ENV['SINGLE_PROCESS'] == "true" || ENV['SINGLE_PROCESS_MODE'] == "true" || self[:single_process_mode]) ? true : false
   end
+
+  def self.use_recaptcha?
+    (self[:recaptcha_public_key].empty? || self[:recaptcha_private_key].empty?) ? false : true
+  end
 end

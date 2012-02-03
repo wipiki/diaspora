@@ -7,6 +7,13 @@ class RegistrationsController < Devise::RegistrationsController
 
   def create
     @user = User.build(params[:user])
+    if AppConfig.use_recaptcha?
+      unless verify_recaptcha(:private_key => AppConfig[:recaptcha_private_key], :message => '')
+        @user.errors.delete(:person)
+        render :new
+        return
+      end
+    end
     if @user.save
       flash[:notice] = I18n.t 'registrations.create.success'
       @user.seed_aspects

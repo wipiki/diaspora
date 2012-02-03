@@ -186,6 +186,11 @@ defaults: &defaults
   # Use paypal for recurring donations
   paypal_hosted_button_id: ""
 
+  # Captcha
+  recaptcha_public_key: '6Lc3Kc0SAAAAANkXsHiLqj5LXYNcHfzm_fTwygcx'
+  recaptcha_private_key: '6Lc3Kc0SAAAAAG0FI8x6qJP_qn6ObYW_P-rkFPYQ'
+  recaptcha_ssl: true
+
 #
 # Use this section to override default settings in specific environments
 #
