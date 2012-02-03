@@ -2,6 +2,8 @@
 #   licensed under the Affero General Public License version 3 or later.  See
 #   the COPYRIGHT file.
 
+require Rails.root.join('lib', 'email_inviter')
+
 class InvitationsController < ApplicationController
 
   def new
@@ -14,10 +16,18 @@ class InvitationsController < ApplicationController
     end
   end
 
+  # this is  for legacy invites.  We try to look the person who sent them the 
+  # invite, and use their new invite code
   def edit
     user = User.find_by_invitation_token(params[:invitation_token])
     invitation_code = user.ugly_accept_invitation_code
     redirect_to invite_code_path(invitation_code)
+  end
+
+
+  def create
+    inviter = EmailInviter.new(params[:email_inviter][:emails], params[:email_inviter])
+    redirect_to multi_stream_path, :notice => "Great! Invites were sent off to #{inviter.emails.join(', ')}" 
   end
 
   def check_if_invites_open
@@ -26,14 +36,5 @@ class InvitationsController < ApplicationController
       redirect_to :back
       return
     end
-  end
-
-  def create
-    emails = params[:email].to_s.gsub(/\s/, '').split(/, */)
-    language = params[:language]
-    invites = Invitation.batch_invite(emails, :message => message, :sender => current_user, :aspect => aspect, :service => 'email', :language => language)
-    flash[:notice] = 
-    puts params.inspect
-    redirect_to root_path
   end
 end

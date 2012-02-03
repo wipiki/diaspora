@@ -34,28 +34,6 @@ describe User do
         alice.save
       end
     end
-
-    describe '#infer_email_from_invitation_provider' do
-      it 'sets corresponding email if invitation_service is email' do
-        addr = '12345@alice.com'
-        alice.invitation_service = 'email'
-        alice.invitation_identifier = addr
-
-        lambda {
-          alice.infer_email_from_invitation_provider
-        }.should change(alice, :email)
-      end
-
-      it 'does not set an email if invitation_service is not email' do
-        addr = '1233123'
-        alice.invitation_service = 'facebook'
-        alice.invitation_identifier = addr
-
-        lambda {
-          alice.infer_email_from_invitation_provider
-        }.should_not change(alice, :email)
-      end
-    end
   end
 
   describe 'hidden_shareables' do
@@ -467,22 +445,6 @@ describe User do
     end
   end
 
-  describe '.create_from_invitation!' do
-    before do
-      @identifier = 'max@foobar.com'
-      @inv = Factory.build(:invitation, :admin => true, :service => 'email', :identifier => @identifier)
-      @user = User.create_from_invitation!(@inv)
-    end
-
-    it 'creates a persisted user' do
-      @user.should be_persisted
-    end
-
-    it 'sets the email if the service is email' do
-      @user.email.should == @inv.identifier
-    end
-  end
-
   describe 'update_user_preferences' do
     before do
       @pref_count = UserPreference::VALID_EMAIL_TYPES.count
@@ -858,54 +820,6 @@ describe User do
     end
   end
 
-  describe "#accept_invitation!" do
-    before do
-      fantasy_resque do
-        @invitation = Factory(:invitation, :sender => eve, :identifier => 'invitee@example.org', :aspect => eve.aspects.first)
-      end
-
-      @invitation.reload
-      @form_params = {
-                       :invitation_token => "abc",
-                       :email    => "a@a.com",
-                       :username => "user",
-                       :password => "secret",
-                       :password_confirmation => "secret",
-                       :person => {
-                         :profile => {:first_name => "Bob", :last_name  => "Smith"}
-                       }
-                     }
-    end
-
-    context 'after invitation acceptance' do
-      it 'destroys the invitations' do
-        user = @invitation.recipient.accept_invitation!(@form_params)
-        user.invitations_to_me.count.should == 0
-      end
-
-      it "should create the person with the passed in params" do
-        lambda {
-          @invitation.recipient.accept_invitation!(@form_params)
-        }.should change(Person, :count).by(1)
-      end
-
-      it 'resolves incoming invitations into contact requests' do
-        user = @invitation.recipient.accept_invitation!(@form_params)
-        eve.contacts.where(:person_id => user.person.id).count.should == 1
-      end
-    end
-
-    context 'from an admin' do
-      it 'should work' do
-        i = nil
-        fantasy_resque do
-          i = Invitation.create!(:admin => true, :service => 'email', :identifier => "new_invitee@example.com")
-        end
-        i.reload
-        i.recipient.accept_invitation!(@form_params)
-      end
-    end
-  end
 
   describe '#retract' do
     before do

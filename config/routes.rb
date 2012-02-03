@@ -27,6 +27,7 @@ Diaspora::Application.routes.draw do
   get "liked" => "streams#liked", :as => "liked_stream"
   get "commented" => "streams#commented", :as => "commented_stream"
   get "aspects" => "streams#aspects", :as => "aspects_stream"
+  
 
   resources :aspects do
     put :toggle_contact_visibility
@@ -95,9 +96,8 @@ Diaspora::Application.routes.draw do
 
   #legacy routes to support old invite routes
   get 'users/invitations/accept' => 'invitations#edit'
-  get 'users/invitations/resend/:id' => 'invitations#resend', :as => 'invitation_resend'
   get 'users/invitations/email' => 'invitations#email', :as => 'invite_email'
-  get 'users/invitations/new' => 'invitations#new', :as => 'new_user_invitation'
+  get 'users/invitations' => 'invitations#new', :as => 'new_user_invitation'
   post 'users/invitations' => 'invitations#create', :as => 'new_user_invitation'
 
   get 'login' => redirect('/users/sign_in')
@@ -178,7 +178,7 @@ Diaspora::Application.routes.draw do
     end
   end
 
-
+  get 'community_spotlight' => "contacts#spotlight", :as => 'community_spotlight'
   # Mobile site
 
   get 'mobile/toggle', :to => 'home#toggle_mobile', :as => 'toggle_mobile'

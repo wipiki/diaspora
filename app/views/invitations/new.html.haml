@@ -10,28 +10,23 @@
         %br
   .span-7.append-1.last
     #email_invitation
-      = form_tag new_user_invitation_path, :method => :post do
+      = form_tag new_user_invitation_path  do
         %h4
           = t('email')
-        = text_field_tag :email,nil, :title => t('.comma_seperated_plz'), :placeholder => 'foo@bar.com, max@foo.com...'
-        %br
-        %h4
-          = t('.aspect')
-        = select_tag(:aspects, options_from_collection_for_select(all_aspects, 'id', 'name'))
-
+        = text_field_tag 'email_inviter[emails]' ,nil, :title => t('.comma_seperated_plz'), :placeholder => 'foo@bar.com, max@foo.com...'
         %br
         %br
 
         %h4
           = t('.language')	
-        = select_tag(:language, available_language_options, :selected => current_user.language)
+        = select_tag('email_inviter[locale]',  options_from_collection_for_select(available_language_options, "second", "first", :selected => current_user.language))
 
         %br
         %br
 
         %h4
           = t('.personal_message')
-        = text_area_tag :invite_messages,nil, :rows => 3, :value => t('.check_out_diaspora')
+        = text_area_tag 'email_inviter[message]',nil, :rows => 3, :value => t('.check_out_diaspora')
 
         %p
           = submit_tag t('.send_an_invitation')
