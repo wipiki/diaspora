@@ -387,54 +387,6 @@ describe User do
     end
   end
 
-  describe '.find_by_invitation' do
-    let(:invited_user) {
-      inv = Factory.build(:invitation, :recipient => @recipient, :service => @type, :identifier => @identifier)
-      User.find_by_invitation(inv)
-    }
-
-    context 'send a request to an existing' do
-      before do
-        @recipient = alice
-      end
-
-      context 'active user' do
-        it 'by service' do
-          @type = 'facebook'
-          @identifier = '123456'
-
-          @recipient.services << Services::Facebook.new(:uid => @identifier)
-          @recipient.save
-
-          invited_user.should == @recipient
-        end
-
-        it 'by email' do
-          @type = 'email'
-          @identifier = alice.email
-
-          invited_user.should == @recipient
-        end
-      end
-
-      context 'invited user' do
-        it 'by service and identifier' do
-          @identifier = alice.email
-          @type = 'email'
-          invited_user.should == alice
-        end
-      end
-
-      context 'not on server (not yet invited)' do
-        it 'returns nil' do
-          @recipient = nil
-          @identifier = 'foo@bar.com'
-          @type = 'email'
-          invited_user.should be_nil
-        end
-      end
-    end
-  end
 
   describe '#process_invite_acceptence' do
     it 'sets the inviter on user' do
