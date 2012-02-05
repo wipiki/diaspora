@@ -187,8 +187,8 @@ defaults: &defaults
   paypal_hosted_button_id: ""
 
   # Captcha
-  recaptcha_public_key: '6Lc3Kc0SAAAAANkXsHiLqj5LXYNcHfzm_fTwygcx'
-  recaptcha_private_key: '6Lc3Kc0SAAAAAG0FI8x6qJP_qn6ObYW_P-rkFPYQ'
+  recaptcha_public_key: ''
+  recaptcha_private_key: ''
   recaptcha_ssl: true
 
 #
