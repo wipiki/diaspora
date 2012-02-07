@@ -170,4 +170,25 @@ HELP
   def self.use_recaptcha?
     (self[:recaptcha_public_key].empty? || self[:recaptcha_private_key].empty?) ? false : true
   end
+
+  def self.recaptcha_ssl?
+    if self[:recaptcha_ssl].nil?
+      URI::parse(self[:pod_url]).scheme.eql?("https") ? true : false
+    else
+      self[:recaptcha_ssl] ? true : false
+    end
+  end
+  
+  attr_accessor :recaptcha_display
+
+  def self.recaptcha_display
+    if @recaptchta_display.nil?
+      if self[:recaptcha_theme].empty? or not ["red", "white", "clean", "blackglass"].include?(self[:recaptcha_theme])
+        @recaptcha_display = {:theme => 'red'}
+      else
+        @recaptcha_display = {:theme => self[:recaptcha_theme]}
+      end
+    end
+    @recaptcha_display
+  end
 end

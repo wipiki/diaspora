@@ -43,7 +43,7 @@
         = f.password_field :password_confirmation, :title => t('registrations.new.enter_password_again')
       .clearfix
         %b
-          = recaptcha_tags :ssl => AppConfig[:recaptcha_ssl], :public_key => AppConfig[:recaptcha_public_key]
+          = recaptcha_tags :ssl => AppConfig.recaptcha_ssl?, :public_key => AppConfig[:recaptcha_public_key], :display => AppConfig.recaptcha_display
 
       .submit_field
         = f.submit t('registrations.new.create_my_account'), :class => 'in_aspects'
